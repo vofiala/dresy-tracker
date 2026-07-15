@@ -1,0 +1,109 @@
+@use '../common/variables' as *;
+@use '../common/mixins' as *;
+
+.table {
+  overflow-x: auto;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+
+  &__grid {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  &__cell {
+    text-align: left;
+    padding: 10px 12px;
+  }
+
+  &__head {
+    background: $color-bg;
+    color: $color-text-muted;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid $color-border;
+  }
+
+  tbody tr:not(:last-child) &__cell {
+    border-bottom: 1px solid $color-border;
+  }
+
+  tbody tr:hover {
+    background: $color-bg;
+  }
+
+  @include mobile-sm {
+    overflow: visible;
+    border: none;
+
+    &__grid {
+      display: block;
+      white-space: normal;
+    }
+
+    thead {
+      display: none;
+    }
+
+    tbody {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    tbody tr {
+      display: block;
+      background: $color-surface;
+      border: 1px solid $color-border;
+      border-radius: 10px;
+    }
+
+    tbody tr:not(:last-child) &__cell {
+      border-bottom: none;
+    }
+
+    &__cell {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+
+      &::before {
+        content: attr(data-label);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: $color-text-muted;
+        flex-shrink: 0;
+      }
+
+      &--actions {
+        flex-direction: column;
+        align-items: stretch;
+
+        &::before {
+          margin-bottom: 4px;
+        }
+
+        .actions {
+          flex-direction: column;
+
+          .btn {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
+
+.empty {
+  color: $color-text-muted;
+  font-size: 14px;
+  padding: 8px 0;
+}

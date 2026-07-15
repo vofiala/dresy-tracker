@@ -1,0 +1,58 @@
+@use '../common/variables' as *;
+
+.btn {
+  font: inherit;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color 0.15s ease-out;
+
+  &--primary {
+    background: $color-primary;
+    color: #fff;
+
+    &:hover {
+      background: $color-primary-dark;
+    }
+  }
+
+  &--secondary {
+    background: $color-text-muted;
+    color: #fff;
+
+    &:hover {
+      background: $color-text;
+    }
+  }
+
+  &--danger {
+    background: $color-danger;
+    color: #fff;
+
+    &:hover {
+      background: $color-danger-dark;
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  &--ghost-light {
+    background: transparent;
+    color: $color-text-muted;
+    border: 1px solid $color-border;
+
+    &:hover {
+      background: $color-bg;
+    }
+  }
+}

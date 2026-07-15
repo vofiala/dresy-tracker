@@ -1,0 +1,20 @@
+@use '../common/variables' as *;
+@use '../common/mixins' as *;
+
+.card {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 12px;
+  padding: 20px;
+
+  @include mobile-xs {
+    padding: 16px;
+  }
+
+  &__title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 16px;
+    color: $color-text;
+  }
+}
