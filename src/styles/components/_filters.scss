@@ -1,0 +1,38 @@
+@use '../common/variables' as *;
+@use '../common/mixins' as *;
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 12px;
+  padding: 14px 16px;
+
+  &__input {
+    flex: 1 1 160px;
+    font: inherit;
+    padding: 10px 12px;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+    color: $color-text;
+    background: $color-bg;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+    }
+  }
+
+  &__toggle {
+    flex-shrink: 0;
+  }
+
+  @include mobile-xs {
+    &__input,
+    &__toggle {
+      flex: 1 1 100%;
+    }
+  }
+}

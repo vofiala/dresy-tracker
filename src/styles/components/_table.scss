@@ -1,10 +1,64 @@
 @use '../common/variables' as *;
 @use '../common/mixins' as *;
 
+.players {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .table {
   overflow-x: auto;
   border: 1px solid $color-border;
   border-radius: 8px;
+
+  &__player-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    background: $color-bg;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &__player-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: $color-text;
+  }
+
+  &__player-role {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: $color-primary-dark;
+    background: $color-danger-bg;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  &__player-category {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: $color-text-muted;
+    background: $color-surface;
+    border: 1px solid $color-border;
+    padding: 1px 8px;
+    border-radius: 999px;
+  }
+
+  &__player-count {
+    font-size: 12px;
+    font-weight: 400;
+    color: $color-text-muted;
+  }
 
   &__grid {
     width: 100%;
@@ -35,9 +89,21 @@
     background: $color-bg;
   }
 
+  @include mobile-xs {
+    &__player-header {
+      flex-wrap: wrap;
+    }
+  }
+
   @include mobile-sm {
     overflow: visible;
     border: none;
+
+    &__player-header {
+      border: 1px solid $color-border;
+      border-radius: 8px 8px 0 0;
+      margin-bottom: 8px;
+    }
 
     &__grid {
       display: block;

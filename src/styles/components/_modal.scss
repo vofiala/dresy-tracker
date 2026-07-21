@@ -16,6 +16,10 @@
     padding: 24px;
     width: 100%;
     max-width: 320px;
+
+    &--wide {
+      max-width: 460px;
+    }
   }
 
   &__title {
