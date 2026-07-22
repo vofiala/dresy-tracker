@@ -1,3 +1,5 @@
+import { Button } from './ui/Button'
+
 export const Header = ({ isAdmin, onLoginClick, onLogout }) => (
   <header className="header">
     <h1 className="header__title">Dresy</h1>
@@ -5,14 +7,14 @@ export const Header = ({ isAdmin, onLoginClick, onLogout }) => (
     {isAdmin ? (
       <div className="header__admin">
         <span className="header__badge">Admin</span>
-        <button type="button" className="btn btn--ghost" onClick={onLogout}>
+        <Button variant="ghost" onClick={onLogout}>
           Odhlásit admina
-        </button>
+        </Button>
       </div>
     ) : (
-      <button type="button" className="btn btn--ghost" onClick={onLoginClick}>
+      <Button variant="ghost" onClick={onLoginClick}>
         Přihlásit
-      </button>
+      </Button>
     )}
   </header>
 )
