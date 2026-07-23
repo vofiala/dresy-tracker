@@ -24,7 +24,6 @@ export const FilterBar = ({ filters, onFilterChange, onToggleUnreturned }) => (
       onChange={(event) => onFilterChange('kategorie', event.target.value)}
     />
     <Button
-      size="sm"
       variant={filters.onlyUnreturned ? 'primary' : 'secondary'}
       className="filters__toggle"
       onClick={onToggleUnreturned}

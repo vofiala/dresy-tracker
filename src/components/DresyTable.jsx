@@ -1,5 +1,7 @@
 import { StatusBadge } from './ui/StatusBadge'
 import { Button } from './ui/Button'
+import { ColorDot } from './ui/ColorDot'
+import { ActionMenu } from './ui/ActionMenu'
 
 const normalize = (value) => value.trim().toLowerCase()
 
@@ -59,20 +61,17 @@ export const DresyTable = ({
         <div className="table" key={hrac.id}>
           <div className="table__player-header">
             <h3 className="table__player-name">
-              {hrac.jmeno}
-              {hrac.poznamka && <span className="table__player-role">{hrac.poznamka}</span>}
+              <span className="table__player-name-text">{hrac.jmeno}</span>
               {hrac.kategorie && <span className="table__player-category">{hrac.kategorie}</span>}
-              <span className="table__player-count">
-                {playerDresy.length} {playerDresy.length === 1 ? 'dres' : 'dresy'}
-              </span>
+              {hrac.poznamka && <span className="table__player-role">{hrac.poznamka}</span>}
             </h3>
             {isAdmin && (
               <div className="actions">
-                <Button size="sm" onClick={() => onEditPlayerRequest(hrac)}>
-                  Upravit hráče
-                </Button>
                 <Button size="sm" onClick={() => onAddRequest(hrac)}>
                   + Přidat dres
+                </Button>
+                <Button size="sm" onClick={() => onEditPlayerRequest(hrac)}>
+                  Upravit hráče
                 </Button>
               </div>
             )}
@@ -90,8 +89,11 @@ export const DresyTable = ({
             <tbody>
               {playerDresy.map((dres) => (
                 <tr key={dres.id}>
-                  <td className="table__cell" data-label="Číslo dresu">
-                    {dres.cislo_dresu}
+                  <td className="table__cell table__cell--number" data-label="Číslo dresu">
+                    <span className="table__jersey">
+                      <ColorDot color={dres.barva_dresu} />
+                      <span className="table__number">{dres.cislo_dresu}</span>
+                    </span>
                   </td>
                   <td className="table__cell" data-label="Barva dresu">
                     {dres.barva_dresu}
@@ -101,15 +103,24 @@ export const DresyTable = ({
                   </td>
                   {isAdmin && (
                     <td className="table__cell table__cell--actions" data-label="Akce">
-                      <div className="actions">
-                        {!dres.vraceno && (
-                          <Button onClick={() => onReturnRequest(dres.id)}>
-                            Označit jako vrácené
-                          </Button>
-                        )}
-                        <Button onClick={() => onDeleteRequest(dres.id)}>Smazat</Button>
-                        <Button onClick={() => onEditRequest(dres.id)}>Upravit</Button>
-                      </div>
+                      <ActionMenu
+                        items={[
+                          ...(dres.vraceno
+                            ? []
+                            : [
+                                {
+                                  label: 'Označit jako vrácené',
+                                  onClick: () => onReturnRequest(dres.id),
+                                },
+                              ]),
+                          { label: 'Upravit', onClick: () => onEditRequest(dres.id) },
+                          {
+                            label: 'Smazat',
+                            variant: 'danger',
+                            onClick: () => onDeleteRequest(dres.id),
+                          },
+                        ]}
+                      />
                     </td>
                   )}
                 </tr>

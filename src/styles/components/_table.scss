@@ -4,13 +4,15 @@
 .players {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 }
 
 .table {
   overflow-x: auto;
+  background: $color-surface;
   border: 1px solid $color-border;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
 
   &__player-header {
     display: flex;
@@ -29,35 +31,34 @@
     font-size: 15px;
     font-weight: 700;
     color: $color-text;
+    margin: 0;
   }
 
-  &__player-role {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    color: $color-primary-dark;
-    background: $color-danger-bg;
-    padding: 2px 8px;
-    border-radius: 999px;
+  &__player-name-text {
+    text-transform: capitalize;
   }
 
+  &__player-role,
   &__player-category {
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.4px;
+    border-radius: 999px;
+  }
+
+  &__player-category {
+    color: $color-text;
+    background: white;
+    border: 1px solid $color-border;
+    padding: 2px 8px;
+  }
+
+  &__player-role {
     color: $color-text-muted;
     background: $color-surface;
     border: 1px solid $color-border;
     padding: 1px 8px;
-    border-radius: 999px;
-  }
-
-  &__player-count {
-    font-size: 12px;
-    font-weight: 400;
-    color: $color-text-muted;
   }
 
   &__grid {
@@ -69,7 +70,23 @@
 
   &__cell {
     text-align: left;
-    padding: 10px 12px;
+    padding: 8px 12px;
+
+    &--actions {
+      text-align: right;
+      width: 1%;
+    }
+  }
+
+  &__jersey {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__number {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
   }
 
   &__head {
@@ -83,10 +100,6 @@
 
   tbody tr:not(:last-child) &__cell {
     border-bottom: 1px solid $color-border;
-  }
-
-  tbody tr:hover {
-    background: $color-bg;
   }
 
   @include mobile-xs {
@@ -149,20 +162,7 @@
       }
 
       &--actions {
-        flex-direction: column;
-        align-items: stretch;
-
-        &::before {
-          margin-bottom: 4px;
-        }
-
-        .actions {
-          flex-direction: column;
-
-          .btn {
-            width: 100%;
-          }
-        }
+        justify-content: space-between;
       }
     }
   }
