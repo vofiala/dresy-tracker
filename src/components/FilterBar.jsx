@@ -1,3 +1,5 @@
+import { Button } from './ui/Button'
+
 export const FilterBar = ({ filters, onFilterChange, onToggleUnreturned }) => (
   <div className="filters">
     <input
@@ -21,12 +23,13 @@ export const FilterBar = ({ filters, onFilterChange, onToggleUnreturned }) => (
       value={filters.kategorie}
       onChange={(event) => onFilterChange('kategorie', event.target.value)}
     />
-    <button
-      type="button"
-      className={`btn btn--sm filters__toggle ${filters.onlyUnreturned ? 'btn--primary' : 'btn--secondary'}`}
+    <Button
+      size="sm"
+      variant={filters.onlyUnreturned ? 'primary' : 'secondary'}
+      className="filters__toggle"
       onClick={onToggleUnreturned}
     >
       Jen nevrácené
-    </button>
+    </Button>
   </div>
 )

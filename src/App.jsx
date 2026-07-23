@@ -12,18 +12,18 @@ import {
 import { db } from './firebase'
 import { COLLECTION, PLAYERS_COLLECTION, ADMIN_PIN, ADMIN_STORAGE_KEY } from './constants'
 import { Header } from './components/Header'
+import { Button } from './components/ui/Button'
 import { LoginModal } from './components/LoginModal'
-import { DeleteConfirmModal } from './components/DeleteConfirmModal'
-import { ReturnConfirmModal } from './components/ReturnConfirmModal'
-import { EditDrezModal } from './components/EditDrezModal'
+import { ConfirmModal } from './components/ui/ConfirmModal'
+import { EditDresModal } from './components/EditDresModal'
 import { AddPlayerModal } from './components/AddPlayerModal'
 import { AddDresModal } from './components/AddDresModal'
 import { EditPlayerModal } from './components/EditPlayerModal'
 import { FilterBar } from './components/FilterBar'
-import { DrezyTable } from './components/DrezyTable'
+import { DresyTable } from './components/DresyTable'
 
 export const App = () => {
-  const [drezy, setDrezy] = useState([])
+  const [dresy, setDresy] = useState([])
   const [hraci, setHraci] = useState([])
 
   const [isAdmin, setIsAdmin] = useState(
@@ -44,9 +44,9 @@ export const App = () => {
   })
 
   useEffect(() => {
-    const drezyQuery = query(collection(db, COLLECTION), orderBy('cislo_dresu', 'asc'))
-    return onSnapshot(drezyQuery, (snapshot) => {
-      setDrezy(snapshot.docs.map((docSnapshot) => ({ id: docSnapshot.id, ...docSnapshot.data() })))
+    const dresyQuery = query(collection(db, COLLECTION), orderBy('cislo_dresu', 'asc'))
+    return onSnapshot(dresyQuery, (snapshot) => {
+      setDresy(snapshot.docs.map((docSnapshot) => ({ id: docSnapshot.id, ...docSnapshot.data() })))
     })
   }, [])
 
@@ -115,7 +115,7 @@ export const App = () => {
     setDeletingId(null)
   }
 
-  const handleEditDrez = async (id, { cisloDresu, barvaDresu }) => {
+  const handleEditDres = async (id, { cisloDresu, barvaDresu }) => {
     await updateDoc(doc(db, COLLECTION, id), {
       cislo_dresu: Number(cisloDresu),
       barva_dresu: barvaDresu,
@@ -149,9 +149,11 @@ export const App = () => {
     }))
   }
 
-  const deletingDrez = drezy.find((drez) => drez.id === deletingId)
-  const returningDrez = drezy.find((drez) => drez.id === returningId)
-  const editingDrez = drezy.find((drez) => drez.id === editingId)
+  const playerName = (hracId) => hraci.find((hrac) => hrac.id === hracId)?.jmeno ?? 'neznámý hráč'
+
+  const deletingDres = dresy.find((dres) => dres.id === deletingId)
+  const returningDres = dresy.find((dres) => dres.id === returningId)
+  const editingDres = dresy.find((dres) => dres.id === editingId)
 
   return (
     <>
@@ -167,21 +169,34 @@ export const App = () => {
         onClose={() => setIsLoginModalOpen(false)}
       />
 
-      <DeleteConfirmModal
-        drez={deletingDrez}
-        onConfirm={() => handleDelete(deletingDrez.id)}
+      <ConfirmModal
+        isOpen={Boolean(deletingDres)}
+        title="Smazat záznam"
+        message={
+          deletingDres &&
+          `Opravdu chcete smazat dres č. ${deletingDres.cislo_dresu} hráče ${playerName(deletingDres.hrac_id)}?`
+        }
+        confirmLabel="Smazat"
+        confirmVariant="danger"
+        onConfirm={() => handleDelete(deletingDres.id)}
         onCancel={() => setDeletingId(null)}
       />
 
-      <ReturnConfirmModal
-        drez={returningDrez}
-        onConfirm={() => handleMarkReturned(returningDrez.id)}
+      <ConfirmModal
+        isOpen={Boolean(returningDres)}
+        title="Označit jako vrácené"
+        message={
+          returningDres &&
+          `Opravdu chcete označit dres č. ${returningDres.cislo_dresu} hráče ${playerName(returningDres.hrac_id)} jako vrácený?`
+        }
+        confirmLabel="Označit jako vrácené"
+        onConfirm={() => handleMarkReturned(returningDres.id)}
         onCancel={() => setReturningId(null)}
       />
 
-      <EditDrezModal
-        drez={editingDrez}
-        onSave={handleEditDrez}
+      <EditDresModal
+        dres={editingDres}
+        onSave={handleEditDres}
         onMarkUnreturned={handleMarkUnreturned}
         onCancel={() => setEditingId(null)}
       />
@@ -213,20 +228,16 @@ export const App = () => {
         />
 
         {isAdmin && (
-          <button
-            type="button"
-            className="btn btn--primary"
-            onClick={() => setIsAddPlayerModalOpen(true)}
-          >
+          <Button variant="primary" onClick={() => setIsAddPlayerModalOpen(true)}>
             + Přidat hráče
-          </button>
+          </Button>
         )}
 
         <section className="card">
           <h2 className="card__title">Přehled</h2>
-          <DrezyTable
+          <DresyTable
             hraci={hraci}
-            drezy={drezy}
+            dresy={dresy}
             filters={filters}
             isAdmin={isAdmin}
             onAddRequest={setAddingFor}

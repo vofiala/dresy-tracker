@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react'
+import { Modal } from './ui/Modal'
+import { Button } from './ui/Button'
+import { Field } from './ui/Field'
 
 export const EditPlayerModal = ({ player, onSave, onCancel }) => {
   const [jmeno, setJmeno] = useState('')
@@ -13,10 +16,6 @@ export const EditPlayerModal = ({ player, onSave, onCancel }) => {
     }
   }, [player])
 
-  if (!player) {
-    return null
-  }
-
   const handleSubmit = async (event) => {
     event.preventDefault()
 
@@ -25,52 +24,31 @@ export const EditPlayerModal = ({ player, onSave, onCancel }) => {
   }
 
   return (
-    <div className="modal" onClick={onCancel}>
-      <div className="modal__dialog" onClick={(event) => event.stopPropagation()}>
-        <h2 className="modal__title">Upravit hráče</h2>
-        <form className="form" onSubmit={handleSubmit}>
-          <label className="form__field">
-            Jméno
-            <input
-              className="form__input"
-              type="text"
-              value={jmeno}
-              onChange={(event) => setJmeno(event.target.value)}
-              required
-              autoFocus
-            />
-          </label>
+    <Modal isOpen={Boolean(player)} onClose={onCancel} title="Upravit hráče">
+      <form className="form" onSubmit={handleSubmit}>
+        <Field label="Jméno" value={jmeno} onChange={setJmeno} required autoFocus />
 
-          <label className="form__field">
-            Poznámka (např. brankář, obránce, útočník)
-            <input
-              className="form__input"
-              type="text"
-              value={poznamka}
-              onChange={(event) => setPoznamka(event.target.value)}
-            />
-          </label>
+        <Field
+          label="Poznámka (např. brankář, obránce, útočník)"
+          value={poznamka}
+          onChange={setPoznamka}
+        />
 
-          <label className="form__field">
-            Kategorie (např. muži, dorost, žáci)
-            <input
-              className="form__input"
-              type="text"
-              value={kategorie}
-              onChange={(event) => setKategorie(event.target.value)}
-            />
-          </label>
+        <Field
+          label="Kategorie (např. muži, dorost, žáci)"
+          value={kategorie}
+          onChange={setKategorie}
+        />
 
-          <div className="actions">
-            <button type="submit" className="btn btn--primary">
-              Uložit
-            </button>
-            <button type="button" className="btn btn--ghost-light" onClick={onCancel}>
-              Zrušit
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="actions">
+          <Button type="submit" variant="primary">
+            Uložit
+          </Button>
+          <Button variant="ghost-light" onClick={onCancel}>
+            Zrušit
+          </Button>
+        </div>
+      </form>
+    </Modal>
   )
 }
