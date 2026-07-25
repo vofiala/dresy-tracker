@@ -33,11 +33,11 @@
   }
 
   &--danger {
-    background: $color-danger;
+    background: $color-primary;
     color: #fff;
 
     &:hover {
-      background: $color-danger-dark;
+      background: $color-primary-dark;
     }
   }
 
