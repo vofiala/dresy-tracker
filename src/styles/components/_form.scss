@@ -16,6 +16,8 @@
 
   &__input {
     font: inherit;
+    // Alespoň 16px, jinak iOS Safari při fokusu inputu zoomne celou stránku.
+    font-size: 16px;
     padding: 10px 12px;
     border: 1px solid $color-border;
     border-radius: 8px;
