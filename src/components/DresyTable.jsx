@@ -1,7 +1,6 @@
 import { StatusBadge } from './ui/StatusBadge'
 import { Button } from './ui/Button'
 import { ColorDot } from './ui/ColorDot'
-import { ActionMenu } from './ui/ActionMenu'
 
 const normalize = (value) => value.trim().toLowerCase()
 
@@ -41,9 +40,8 @@ export const DresyTable = ({
   isAdmin,
   onAddRequest,
   onEditPlayerRequest,
-  onReturnRequest,
   onEditRequest,
-  onDeleteRequest,
+  onToggleRequest,
 }) => {
   if (hraci.length === 0) {
     return <p className="empty">Zatím žádné záznamy.</p>
@@ -90,37 +88,31 @@ export const DresyTable = ({
               {playerDresy.map((dres) => (
                 <tr key={dres.id}>
                   <td className="table__cell table__cell--number" data-label="Číslo dresu">
-                    <span className="table__jersey">
-                      <ColorDot color={dres.barva_dresu} />
-                      <span className="table__number">{dres.cislo_dresu}</span>
-                    </span>
+                    <span className="table__number">{dres.cislo_dresu}</span>
                   </td>
                   <td className="table__cell" data-label="Barva dresu">
-                    {dres.barva_dresu}
+                    <span className="table__jersey">
+                      <ColorDot color={dres.barva_dresu} />
+                      {dres.barva_dresu}
+                    </span>
                   </td>
                   <td className="table__cell" data-label="Vráceno">
                     <StatusBadge isReturned={dres.vraceno} />
                   </td>
                   {isAdmin && (
                     <td className="table__cell table__cell--actions" data-label="Akce">
-                      <ActionMenu
-                        items={[
-                          ...(dres.vraceno
-                            ? []
-                            : [
-                                {
-                                  label: 'Označit jako vrácené',
-                                  onClick: () => onReturnRequest(dres.id),
-                                },
-                              ]),
-                          { label: 'Upravit', onClick: () => onEditRequest(dres.id) },
-                          {
-                            label: 'Smazat',
-                            variant: 'danger',
-                            onClick: () => onDeleteRequest(dres.id),
-                          },
-                        ]}
-                      />
+                      <div className="actions">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => onToggleRequest(dres.id)}
+                        >
+                          {dres.vraceno ? 'Vydat' : 'Vrátit'}
+                        </Button>
+                        <Button size="sm" onClick={() => onEditRequest(dres.id)}>
+                          Upravit
+                        </Button>
+                      </div>
                     </td>
                   )}
                 </tr>

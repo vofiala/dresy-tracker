@@ -29,10 +29,20 @@
     flex-shrink: 0;
   }
 
-  @include mobile-xs {
-    &__input,
-    &__toggle {
-      flex: 1 1 100%;
+  @include mobile-sm {
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 12px;
+
+    &__input {
+      flex: none;
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+
+    &__toggle.btn {
+      padding: 8px 12px;
+      font-size: 13px;
     }
   }
 }

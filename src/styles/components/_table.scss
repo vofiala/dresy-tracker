@@ -75,6 +75,12 @@
     &--actions {
       text-align: right;
       width: 1%;
+
+      // Jednotná šířka obou tlačítek, ať se řádky zarovnají do sloupců
+      // bez ohledu na text („Vrátit"/„Vydat"/„Upravit").
+      .actions .btn {
+        min-width: 76px;
+      }
     }
   }
 
@@ -102,20 +108,27 @@
     border-bottom: 1px solid $color-border;
   }
 
-  @include mobile-xs {
+  @include mobile-sm {
+    overflow: hidden;
+
     &__player-header {
       flex-wrap: wrap;
     }
-  }
 
-  @include mobile-sm {
-    overflow: visible;
-    border: none;
+    // Menší odznaky, ať jméno hráče zůstane vizuálně hlavní.
+    &__player-role,
+    &__player-category {
+      font-size: 10px;
+      letter-spacing: 0.3px;
+      padding: 1px 6px;
+    }
 
-    &__player-header {
-      border: 1px solid $color-border;
-      border-radius: 8px 8px 0 0;
-      margin-bottom: 8px;
+    &__player-header .actions {
+      width: 100%;
+
+      .btn {
+        flex: 1;
+      }
     }
 
     &__grid {
@@ -128,16 +141,15 @@
     }
 
     tbody {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      display: block;
     }
 
     tbody tr {
       display: block;
-      background: $color-surface;
-      border: 1px solid $color-border;
-      border-radius: 10px;
+    }
+
+    tbody tr:not(:first-child) {
+      border-top: 1px solid $color-border;
     }
 
     tbody tr:not(:last-child) &__cell {
@@ -162,7 +174,22 @@
       }
 
       &--actions {
-        justify-content: space-between;
+        width: auto;
+
+        &::before {
+          display: none;
+        }
+
+        .actions {
+          width: 100%;
+        }
+
+        // Na mobilu ať obě tlačítka sdílí řádek rovným dílem.
+        .actions .btn {
+          flex: 1 1 0;
+          min-width: 0;
+          white-space: normal;
+        }
       }
     }
   }

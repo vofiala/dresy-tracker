@@ -3,7 +3,7 @@ import { Modal } from './ui/Modal'
 import { Button } from './ui/Button'
 import { Field } from './ui/Field'
 
-export const EditDresModal = ({ dres, onSave, onMarkUnreturned, onCancel }) => {
+export const EditDresModal = ({ dres, onSave, onDelete, onCancel }) => {
   const [cisloDresu, setCisloDresu] = useState('')
   const [barvaDresu, setBarvaDresu] = useState('')
 
@@ -33,9 +33,7 @@ export const EditDresModal = ({ dres, onSave, onMarkUnreturned, onCancel }) => {
 
         <Field label="Barva dresu" value={barvaDresu} onChange={setBarvaDresu} required />
 
-        {dres?.vraceno && (
-          <Button onClick={() => onMarkUnreturned(dres.id)}>Označit jako nevrácené</Button>
-        )}
+        <Button onClick={() => onDelete(dres.id)}>Smazat dres</Button>
 
         <div className="actions">
           <Button type="submit" variant="primary">

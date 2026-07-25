@@ -37,4 +37,11 @@
     padding: 4px 10px;
     border-radius: 999px;
   }
+
+  @include mobile-sm {
+    .btn {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+  }
 }

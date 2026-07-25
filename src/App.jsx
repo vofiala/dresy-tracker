@@ -30,7 +30,7 @@ export const App = () => {
     () => localStorage.getItem(ADMIN_STORAGE_KEY) === 'true'
   )
   const [deletingId, setDeletingId] = useState(null)
-  const [returningId, setReturningId] = useState(null)
+  const [togglingId, setTogglingId] = useState(null)
   const [editingId, setEditingId] = useState(null)
   const [addingFor, setAddingFor] = useState(null)
   const [editingPlayerFor, setEditingPlayerFor] = useState(null)
@@ -103,11 +103,16 @@ export const App = () => {
     setIsAdmin(false)
   }
 
-  const handleMarkReturned = async (id) => {
-    await updateDoc(doc(db, COLLECTION, id), {
-      vraceno: true,
+  const handleToggleReturned = async (dres) => {
+    await updateDoc(doc(db, COLLECTION, dres.id), {
+      vraceno: !dres.vraceno,
     })
-    setReturningId(null)
+    setTogglingId(null)
+  }
+
+  const handleDeleteRequest = (id) => {
+    setEditingId(null)
+    setDeletingId(id)
   }
 
   const handleDelete = async (id) => {
@@ -119,13 +124,6 @@ export const App = () => {
     await updateDoc(doc(db, COLLECTION, id), {
       cislo_dresu: Number(cisloDresu),
       barva_dresu: barvaDresu,
-    })
-    setEditingId(null)
-  }
-
-  const handleMarkUnreturned = async (id) => {
-    await updateDoc(doc(db, COLLECTION, id), {
-      vraceno: false,
     })
     setEditingId(null)
   }
@@ -152,7 +150,7 @@ export const App = () => {
   const playerName = (hracId) => hraci.find((hrac) => hrac.id === hracId)?.jmeno ?? 'neznámý hráč'
 
   const deletingDres = dresy.find((dres) => dres.id === deletingId)
-  const returningDres = dresy.find((dres) => dres.id === returningId)
+  const togglingDres = dresy.find((dres) => dres.id === togglingId)
   const editingDres = dresy.find((dres) => dres.id === editingId)
 
   return (
@@ -183,21 +181,23 @@ export const App = () => {
       />
 
       <ConfirmModal
-        isOpen={Boolean(returningDres)}
-        title="Označit jako vrácené"
+        isOpen={Boolean(togglingDres)}
+        title={togglingDres?.vraceno ? 'Vydat dres' : 'Vrátit dres'}
         message={
-          returningDres &&
-          `Opravdu chcete označit dres č. ${returningDres.cislo_dresu} hráče ${playerName(returningDres.hrac_id)} jako vrácený?`
+          togglingDres &&
+          (togglingDres.vraceno
+            ? `Opravdu chcete znovu vydat dres č. ${togglingDres.cislo_dresu} hráče ${playerName(togglingDres.hrac_id)}?`
+            : `Opravdu chcete označit dres č. ${togglingDres.cislo_dresu} hráče ${playerName(togglingDres.hrac_id)} jako vrácený?`)
         }
-        confirmLabel="Označit jako vrácené"
-        onConfirm={() => handleMarkReturned(returningDres.id)}
-        onCancel={() => setReturningId(null)}
+        confirmLabel={togglingDres?.vraceno ? 'Vydat' : 'Vrátit'}
+        onConfirm={() => handleToggleReturned(togglingDres)}
+        onCancel={() => setTogglingId(null)}
       />
 
       <EditDresModal
         dres={editingDres}
         onSave={handleEditDres}
-        onMarkUnreturned={handleMarkUnreturned}
+        onDelete={handleDeleteRequest}
         onCancel={() => setEditingId(null)}
       />
 
@@ -242,9 +242,8 @@ export const App = () => {
             isAdmin={isAdmin}
             onAddRequest={setAddingFor}
             onEditPlayerRequest={setEditingPlayerFor}
-            onReturnRequest={setReturningId}
             onEditRequest={setEditingId}
-            onDeleteRequest={setDeletingId}
+            onToggleRequest={setTogglingId}
           />
         </section>
       </main>
