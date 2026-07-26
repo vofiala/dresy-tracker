@@ -30,6 +30,7 @@ export const App = () => {
     () => localStorage.getItem(ADMIN_STORAGE_KEY) === 'true'
   )
   const [deletingId, setDeletingId] = useState(null)
+  const [deletingPlayerId, setDeletingPlayerId] = useState(null)
   const [togglingId, setTogglingId] = useState(null)
   const [editingId, setEditingId] = useState(null)
   const [addingFor, setAddingFor] = useState(null)
@@ -128,6 +129,18 @@ export const App = () => {
     setEditingId(null)
   }
 
+  const handleDeletePlayerRequest = (id) => {
+    setEditingPlayerFor(null)
+    setDeletingPlayerId(id)
+  }
+
+  const handleDeletePlayer = async (id) => {
+    const playerDresy = dresy.filter((dres) => dres.hrac_id === id)
+    await Promise.all(playerDresy.map((dres) => deleteDoc(doc(db, COLLECTION, dres.id))))
+    await deleteDoc(doc(db, PLAYERS_COLLECTION, id))
+    setDeletingPlayerId(null)
+  }
+
   const handleEditPlayer = async (hracId, { jmeno, poznamka, kategorie }) => {
     await updateDoc(doc(db, PLAYERS_COLLECTION, hracId), {
       jmeno,
@@ -147,9 +160,19 @@ export const App = () => {
     }))
   }
 
+  const handleResetFilters = () => {
+    setFilters({
+      jmeno: '',
+      cisloDresu: '',
+      kategorie: '',
+      onlyUnreturned: false,
+    })
+  }
+
   const playerName = (hracId) => hraci.find((hrac) => hrac.id === hracId)?.jmeno ?? 'neznámý hráč'
 
   const deletingDres = dresy.find((dres) => dres.id === deletingId)
+  const deletingPlayer = hraci.find((hrac) => hrac.id === deletingPlayerId)
   const togglingDres = dresy.find((dres) => dres.id === togglingId)
   const editingDres = dresy.find((dres) => dres.id === editingId)
 
@@ -217,7 +240,21 @@ export const App = () => {
       <EditPlayerModal
         player={editingPlayerFor}
         onSave={handleEditPlayer}
+        onDelete={handleDeletePlayerRequest}
         onCancel={() => setEditingPlayerFor(null)}
+      />
+
+      <ConfirmModal
+        isOpen={Boolean(deletingPlayer)}
+        title="Smazat hráče"
+        message={
+          deletingPlayer &&
+          `Opravdu chcete smazat hráče ${deletingPlayer.jmeno} i se všemi jeho dresy?`
+        }
+        confirmLabel="Smazat"
+        confirmVariant="danger"
+        onConfirm={() => handleDeletePlayer(deletingPlayer.id)}
+        onCancel={() => setDeletingPlayerId(null)}
       />
 
       <main className="container">
@@ -225,6 +262,7 @@ export const App = () => {
           filters={filters}
           onFilterChange={handleFilterChange}
           onToggleUnreturned={handleToggleUnreturned}
+          onResetFilters={handleResetFilters}
         />
 
         {isAdmin && (
@@ -233,19 +271,16 @@ export const App = () => {
           </Button>
         )}
 
-        <section className="card">
-          <h2 className="card__title">Přehled</h2>
-          <DresyTable
-            hraci={hraci}
-            dresy={dresy}
-            filters={filters}
-            isAdmin={isAdmin}
-            onAddRequest={setAddingFor}
-            onEditPlayerRequest={setEditingPlayerFor}
-            onEditRequest={setEditingId}
-            onToggleRequest={setTogglingId}
-          />
-        </section>
+        <DresyTable
+          hraci={hraci}
+          dresy={dresy}
+          filters={filters}
+          isAdmin={isAdmin}
+          onAddRequest={setAddingFor}
+          onEditPlayerRequest={setEditingPlayerFor}
+          onEditRequest={setEditingId}
+          onToggleRequest={setTogglingId}
+        />
       </main>
     </>
   )

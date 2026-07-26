@@ -17,4 +17,14 @@
     margin: 0 0 16px;
     color: $color-text;
   }
+
+  &__title--category::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.categories {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }

@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react'
 import { Modal } from './ui/Modal'
 import { Button } from './ui/Button'
 import { Field } from './ui/Field'
+import { SelectField } from './ui/SelectField'
+import { CATEGORIES } from '../constants'
 
-export const EditPlayerModal = ({ player, onSave, onCancel }) => {
+export const EditPlayerModal = ({ player, onSave, onDelete, onCancel }) => {
   const [jmeno, setJmeno] = useState('')
   const [poznamka, setPoznamka] = useState('')
   const [kategorie, setKategorie] = useState('')
@@ -34,11 +36,16 @@ export const EditPlayerModal = ({ player, onSave, onCancel }) => {
           onChange={setPoznamka}
         />
 
-        <Field
-          label="Kategorie (např. muži, dorost, žáci)"
+        <SelectField
+          label="Kategorie"
           value={kategorie}
           onChange={setKategorie}
+          options={CATEGORIES}
+          placeholder="Vyberte kategorii"
+          required
         />
+
+        <Button onClick={() => onDelete(player.id)}>Smazat hráče</Button>
 
         <div className="actions">
           <Button type="submit" variant="primary">

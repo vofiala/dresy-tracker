@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Modal } from './ui/Modal'
 import { Button } from './ui/Button'
 import { Field } from './ui/Field'
+import { SelectField } from './ui/SelectField'
+import { CATEGORIES } from '../constants'
 
 const emptyJersey = () => ({ cisloDresu: '', barvaDresu: '' })
 
@@ -53,10 +55,13 @@ export const AddPlayerModal = ({ isOpen, onAdd, onCancel }) => {
           onChange={setPoznamka}
         />
 
-        <Field
-          label="Kategorie (např. muži, dorost, žáci)"
+        <SelectField
+          label="Kategorie"
           value={kategorie}
           onChange={setKategorie}
+          options={CATEGORIES}
+          placeholder="Vyberte kategorii"
+          required
         />
 
         {jerseys.map((jersey, index) => (
