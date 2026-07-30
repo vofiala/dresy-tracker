@@ -21,6 +21,7 @@ import { AddDresModal } from './components/AddDresModal'
 import { EditPlayerModal } from './components/EditPlayerModal'
 import { FilterBar } from './components/FilterBar'
 import { DresyTable } from './components/DresyTable'
+import { exportCsv, exportPdf } from './utils/exportTable'
 
 export const App = () => {
   const [dresy, setDresy] = useState([])
@@ -265,11 +266,29 @@ export const App = () => {
           onResetFilters={handleResetFilters}
         />
 
-        {isAdmin && (
-          <Button variant="primary" onClick={() => setIsAddPlayerModalOpen(true)}>
-            + Přidat hráče
-          </Button>
-        )}
+        <div className="toolbar">
+          {isAdmin && (
+            <Button variant="primary" onClick={() => setIsAddPlayerModalOpen(true)}>
+              + Přidat hráče
+            </Button>
+          )}
+          <div className="toolbar__export">
+            <Button
+              variant="secondary"
+              onClick={() => exportCsv(hraci, dresy)}
+              disabled={hraci.length === 0}
+            >
+              Stáhnout CSV
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => exportPdf(hraci, dresy)}
+              disabled={hraci.length === 0}
+            >
+              Stáhnout PDF
+            </Button>
+          </div>
+        </div>
 
         <DresyTable
           hraci={hraci}

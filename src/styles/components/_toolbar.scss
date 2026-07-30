@@ -1,0 +1,26 @@
+@use '../common/mixins' as *;
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+
+  &__export {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-left: auto;
+  }
+
+  @include mobile-sm {
+    &__export {
+      margin-left: 0;
+      width: 100%;
+
+      .btn {
+        flex: 1 1 auto;
+      }
+    }
+  }
+}
