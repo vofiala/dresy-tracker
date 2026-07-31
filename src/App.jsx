@@ -268,7 +268,11 @@ export const App = () => {
 
         <div className="toolbar">
           {isAdmin && (
-            <Button variant="primary" onClick={() => setIsAddPlayerModalOpen(true)}>
+            <Button
+              variant="primary"
+              className="toolbar__add"
+              onClick={() => setIsAddPlayerModalOpen(true)}
+            >
               + Přidat hráče
             </Button>
           )}
