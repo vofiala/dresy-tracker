@@ -9,8 +9,9 @@ import {
   orderBy,
   query,
 } from 'firebase/firestore'
-import { db } from './firebase'
-import { COLLECTION, PLAYERS_COLLECTION, ADMIN_PIN, ADMIN_STORAGE_KEY } from './constants'
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth'
+import { db, auth } from './firebase'
+import { COLLECTION, PLAYERS_COLLECTION } from './constants'
 import { Header } from './components/Header'
 import { Button } from './components/ui/Button'
 import { LoginModal } from './components/LoginModal'
@@ -27,9 +28,7 @@ export const App = () => {
   const [dresy, setDresy] = useState([])
   const [hraci, setHraci] = useState([])
 
-  const [isAdmin, setIsAdmin] = useState(
-    () => localStorage.getItem(ADMIN_STORAGE_KEY) === 'true'
-  )
+  const [isAdmin, setIsAdmin] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const [deletingPlayerId, setDeletingPlayerId] = useState(null)
   const [togglingId, setTogglingId] = useState(null)
@@ -44,6 +43,8 @@ export const App = () => {
     kategorie: '',
     onlyUnreturned: false,
   })
+
+  useEffect(() => onAuthStateChanged(auth, (user) => setIsAdmin(Boolean(user))), [])
 
   useEffect(() => {
     const dresyQuery = query(collection(db, COLLECTION), orderBy('cislo_dresu', 'asc'))
@@ -89,21 +90,12 @@ export const App = () => {
     })
   }
 
-  const handleUnlock = (pinInput) => {
-    if (pinInput !== ADMIN_PIN) {
-      return false
-    }
-
-    localStorage.setItem(ADMIN_STORAGE_KEY, 'true')
-    setIsAdmin(true)
+  const handleLogin = async (email, password) => {
+    await signInWithEmailAndPassword(auth, email, password)
     setIsLoginModalOpen(false)
-    return true
   }
 
-  const handleLock = () => {
-    localStorage.removeItem(ADMIN_STORAGE_KEY)
-    setIsAdmin(false)
-  }
+  const handleLock = () => signOut(auth)
 
   const handleToggleReturned = async (dres) => {
     await updateDoc(doc(db, COLLECTION, dres.id), {
@@ -187,7 +179,7 @@ export const App = () => {
 
       <LoginModal
         isOpen={isLoginModalOpen}
-        onUnlock={handleUnlock}
+        onLogin={handleLogin}
         onClose={() => setIsLoginModalOpen(false)}
       />
 
