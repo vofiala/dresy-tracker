@@ -88,6 +88,9 @@ const PlayerGroup = ({
   onDragStart,
   onDragOver,
   onDrop,
+  onMove,
+  canMoveUp,
+  canMoveDown,
 }) => (
   <div
     className="table"
@@ -108,6 +111,30 @@ const PlayerGroup = ({
       </h3>
       {isAdmin && (
         <div className="actions">
+          {isReorderingEnabled && (
+            <div className="table__reorder-actions">
+              <Button
+                size="sm"
+                variant="ghost-light"
+                aria-label={`Posunout hráče ${hrac.jmeno} nahoru`}
+                title="Posunout nahoru"
+                onClick={() => onMove(hrac.id, -1)}
+                disabled={!canMoveUp}
+              >
+                ↑
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost-light"
+                aria-label={`Posunout hráče ${hrac.jmeno} dolů`}
+                title="Posunout dolů"
+                onClick={() => onMove(hrac.id, 1)}
+                disabled={!canMoveDown}
+              >
+                ↓
+              </Button>
+            </div>
+          )}
           <Button size="sm" onClick={() => onAddRequest(hrac)}>
             + Přidat dres
           </Button>
@@ -221,28 +248,56 @@ export const DresyTable = ({
     onReorder(categoryGroups)
   }
 
+  const handleMove = (playerId, direction) => {
+    const section = allSections.find((candidateSection) =>
+      candidateSection.groups.some(({ hrac }) => hrac.id === playerId)
+    )
+    const playerIds = section.groups.map(({ hrac }) => hrac.id)
+    const currentIndex = playerIds.indexOf(playerId)
+    const targetIndex = currentIndex + direction
+
+    if (targetIndex < 0 || targetIndex >= playerIds.length) {
+      return
+    }
+
+    const reorderedPlayerIds = [...playerIds]
+    reorderedPlayerIds[currentIndex] = playerIds[targetIndex]
+    reorderedPlayerIds[targetIndex] = playerIds[currentIndex]
+    onReorder(reorderedPlayerIds)
+  }
+
   return (
     <div className="categories">
       {sections.map(({ key, label, groups }) => (
         <section className="card" key={key}>
           <h2 className="card__title card__title--category">{label}</h2>
           <div className="players">
-            {groups.map(({ hrac, playerDresy }) => (
-              <PlayerGroup
-                key={hrac.id}
-                hrac={hrac}
-                playerDresy={playerDresy}
-                isAdmin={isAdmin}
-                onAddRequest={onAddRequest}
-                onEditPlayerRequest={onEditPlayerRequest}
-                onEditRequest={onEditRequest}
-                onToggleRequest={onToggleRequest}
-                isReorderingEnabled={isReorderingEnabled}
-                onDragStart={setDraggedPlayerId}
-                onDragOver={(event) => event.preventDefault()}
-                onDrop={handleDrop}
-              />
-            ))}
+            {groups.map(({ hrac, playerDresy }) => {
+              const sectionGroups = allSections.find((candidateSection) =>
+                candidateSection.groups.some(({ hrac: candidateHrac }) => candidateHrac.id === hrac.id)
+              )?.groups ?? []
+              const playerIndex = sectionGroups.findIndex(({ hrac: candidateHrac }) => candidateHrac.id === hrac.id)
+
+              return (
+                <PlayerGroup
+                  key={hrac.id}
+                  hrac={hrac}
+                  playerDresy={playerDresy}
+                  isAdmin={isAdmin}
+                  onAddRequest={onAddRequest}
+                  onEditPlayerRequest={onEditPlayerRequest}
+                  onEditRequest={onEditRequest}
+                  onToggleRequest={onToggleRequest}
+                  isReorderingEnabled={isReorderingEnabled}
+                  onDragStart={setDraggedPlayerId}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={handleDrop}
+                  onMove={handleMove}
+                  canMoveUp={playerIndex > 0}
+                  canMoveDown={playerIndex < sectionGroups.length - 1}
+                />
+              )
+            })}
           </div>
         </section>
       ))}
