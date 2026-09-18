@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { StatusBadge } from './ui/StatusBadge'
 import { Button } from './ui/Button'
 import { ColorDot } from './ui/ColorDot'
@@ -13,7 +14,11 @@ const groupDresyByHrac = (hraci, dresy) =>
         .filter((dres) => dres.hrac_id === hrac.id)
         .sort((dresA, dresB) => dresA.cislo_dresu - dresB.cislo_dresu),
     }))
-    .sort((groupA, groupB) => groupA.hrac.jmeno.localeCompare(groupB.hrac.jmeno, 'cs'))
+    .sort((groupA, groupB) => {
+      const orderA = Number.isFinite(groupA.hrac.poradi) ? groupA.hrac.poradi : groupA.hrac.legacyOrder
+      const orderB = Number.isFinite(groupB.hrac.poradi) ? groupB.hrac.poradi : groupB.hrac.legacyOrder
+      return orderA - orderB
+    })
 
 const filterPlayerGroups = (playerGroups, filters) => {
   const jmenoFilter = normalize(filters.jmeno)
@@ -79,10 +84,25 @@ const PlayerGroup = ({
   onEditPlayerRequest,
   onEditRequest,
   onToggleRequest,
+  isReorderingEnabled,
+  onDragStart,
+  onDragOver,
+  onDrop,
 }) => (
-  <div className="table">
+  <div
+    className="table"
+    draggable={isReorderingEnabled}
+    onDragStart={() => onDragStart(hrac.id)}
+    onDragOver={(event) => onDragOver(event)}
+    onDrop={() => onDrop(hrac.id)}
+  >
     <div className="table__player-header">
       <h3 className="table__player-name">
+        {isReorderingEnabled && (
+          <span className="table__drag-handle" aria-label="Přesunout hráče" title="Přesunout hráče">
+            ⋮⋮
+          </span>
+        )}
         <span className="table__player-name-text">{hrac.jmeno}</span>
         {hrac.poznamka && <span className="table__player-role">{hrac.poznamka}</span>}
       </h3>
@@ -154,7 +174,11 @@ export const DresyTable = ({
   onEditPlayerRequest,
   onEditRequest,
   onToggleRequest,
+  isReorderingEnabled,
+  onReorder,
 }) => {
+  const [draggedPlayerId, setDraggedPlayerId] = useState(null)
+
   if (hraci.length === 0) {
     return <p className="empty">Zatím žádné záznamy.</p>
   }
@@ -165,7 +189,37 @@ export const DresyTable = ({
     return <p className="empty">Žádné záznamy neodpovídají filtru.</p>
   }
 
+  const allSections = buildCategorySections(groupDresyByHrac(hraci, dresy))
   const sections = buildCategorySections(playerGroups)
+
+  const handleDrop = (targetPlayerId) => {
+    if (!draggedPlayerId || draggedPlayerId === targetPlayerId) {
+      setDraggedPlayerId(null)
+      return
+    }
+
+    const targetGroup = sections
+      .flatMap((section) => section.groups)
+      .find(({ hrac }) => hrac.id === targetPlayerId)
+    const sourceGroup = sections
+      .flatMap((section) => section.groups)
+      .find(({ hrac }) => hrac.id === draggedPlayerId)
+
+    if (!targetGroup || !sourceGroup || targetGroup.category !== sourceGroup.category) {
+      setDraggedPlayerId(null)
+      return
+    }
+
+    const categoryGroups = allSections
+      .find((section) => section.groups.some(({ hrac }) => hrac.id === targetPlayerId))
+      .groups.map(({ hrac }) => hrac.id)
+    const sourceIndex = categoryGroups.indexOf(draggedPlayerId)
+    const targetIndex = categoryGroups.indexOf(targetPlayerId)
+    categoryGroups.splice(sourceIndex, 1)
+    categoryGroups.splice(targetIndex, 0, draggedPlayerId)
+    setDraggedPlayerId(null)
+    onReorder(categoryGroups)
+  }
 
   return (
     <div className="categories">
@@ -183,6 +237,10 @@ export const DresyTable = ({
                 onEditPlayerRequest={onEditPlayerRequest}
                 onEditRequest={onEditRequest}
                 onToggleRequest={onToggleRequest}
+                isReorderingEnabled={isReorderingEnabled}
+                onDragStart={setDraggedPlayerId}
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={handleDrop}
               />
             ))}
           </div>

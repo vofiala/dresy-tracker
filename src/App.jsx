@@ -8,6 +8,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  writeBatch,
 } from 'firebase/firestore'
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth'
 import { db, auth } from './firebase'
@@ -56,15 +57,26 @@ export const App = () => {
   useEffect(() => {
     const hraciQuery = query(collection(db, PLAYERS_COLLECTION), orderBy('jmeno', 'asc'))
     return onSnapshot(hraciQuery, (snapshot) => {
-      setHraci(snapshot.docs.map((docSnapshot) => ({ id: docSnapshot.id, ...docSnapshot.data() })))
+      setHraci(
+        snapshot.docs.map((docSnapshot, index) => ({
+          id: docSnapshot.id,
+          ...docSnapshot.data(),
+          legacyOrder: index,
+        }))
+      )
     })
   }, [])
 
   const handleAddPlayer = async ({ jmeno, poznamka, kategorie, jerseys }) => {
+    const nextOrder = hraci.reduce(
+      (highestOrder, hrac) => Math.max(highestOrder, Number.isFinite(hrac.poradi) ? hrac.poradi : -1),
+      -1
+    ) + 1
     const hracRef = await addDoc(collection(db, PLAYERS_COLLECTION), {
       jmeno,
       poznamka: poznamka || null,
       kategorie: kategorie || null,
+      poradi: nextOrder,
     })
 
     await Promise.all(
@@ -142,6 +154,14 @@ export const App = () => {
     })
   }
 
+  const handleReorderPlayers = async (playerIds) => {
+    const batch = writeBatch(db)
+    playerIds.forEach((playerId, index) => {
+      batch.update(doc(db, PLAYERS_COLLECTION, playerId), { poradi: index })
+    })
+    await batch.commit()
+  }
+
   const handleFilterChange = (field, value) => {
     setFilters((previousFilters) => ({ ...previousFilters, [field]: value }))
   }
@@ -161,6 +181,8 @@ export const App = () => {
       onlyUnreturned: false,
     })
   }
+
+  const isReorderingEnabled = isAdmin && !Object.values(filters).some(Boolean)
 
   const playerName = (hracId) => hraci.find((hrac) => hrac.id === hracId)?.jmeno ?? 'neznámý hráč'
 
@@ -295,6 +317,8 @@ export const App = () => {
           onEditPlayerRequest={setEditingPlayerFor}
           onEditRequest={setEditingId}
           onToggleRequest={setTogglingId}
+          isReorderingEnabled={isReorderingEnabled}
+          onReorder={handleReorderPlayers}
         />
       </main>
     </>

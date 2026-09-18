@@ -33,12 +33,14 @@ const groupByJmeno = (legacyDocs) => {
     groups.get(jmeno).push(drez)
   })
 
-  return Array.from(groups.entries()).map(([jmeno, legacyDrezy]) => ({
-    jmeno,
-    poznamka: legacyDrezy.find((drez) => drez.poznamka)?.poznamka ?? null,
-    kategorie: legacyDrezy.find((drez) => drez.kategorie)?.kategorie ?? null,
-    legacyDrezy,
-  }))
+  return Array.from(groups.entries())
+    .map(([jmeno, legacyDrezy]) => ({
+      jmeno,
+      poznamka: legacyDrezy.find((drez) => drez.poznamka)?.poznamka ?? null,
+      kategorie: legacyDrezy.find((drez) => drez.kategorie)?.kategorie ?? null,
+      legacyDrezy,
+    }))
+    .sort((groupA, groupB) => groupA.jmeno.localeCompare(groupB.jmeno, 'cs'))
 }
 
 const run = async () => {
@@ -69,8 +71,8 @@ const run = async () => {
 
   console.log(`\nApplying migration: ${LEGACY_COLLECTION} -> ${HRACI_COLLECTION} + ${DRESY_COLLECTION}...`)
 
-  for (const { jmeno, poznamka, kategorie, legacyDrezy } of playerGroups) {
-    const hracRef = await addDoc(collection(db, HRACI_COLLECTION), { jmeno, poznamka, kategorie })
+  for (const [poradi, { jmeno, poznamka, kategorie, legacyDrezy }] of playerGroups.entries()) {
+    const hracRef = await addDoc(collection(db, HRACI_COLLECTION), { jmeno, poznamka, kategorie, poradi })
 
     for (const legacyDrez of legacyDrezy) {
       await addDoc(collection(db, DRESY_COLLECTION), {

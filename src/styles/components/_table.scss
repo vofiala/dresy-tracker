@@ -34,6 +34,19 @@
     margin: 0;
   }
 
+  &__drag-handle {
+    color: $color-text-muted;
+    cursor: grab;
+    font-size: 18px;
+    letter-spacing: -3px;
+    line-height: 1;
+    user-select: none;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
   &__player-name-text {
     text-transform: capitalize;
   }
