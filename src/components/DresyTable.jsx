@@ -106,35 +106,35 @@ const PlayerGroup = ({
             ⋮⋮
           </span>
         )}
+        {isReorderingEnabled && (
+          <div className="table__reorder-actions">
+            <Button
+              size="sm"
+              variant="ghost-light"
+              aria-label={`Posunout hráče ${hrac.jmeno} nahoru`}
+              title="Posunout nahoru"
+              onClick={() => onMove(hrac.id, -1)}
+              disabled={!canMoveUp}
+            >
+              ↑
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost-light"
+              aria-label={`Posunout hráče ${hrac.jmeno} dolů`}
+              title="Posunout dolů"
+              onClick={() => onMove(hrac.id, 1)}
+              disabled={!canMoveDown}
+            >
+              ↓
+            </Button>
+          </div>
+        )}
         <span className="table__player-name-text">{hrac.jmeno}</span>
         {hrac.poznamka && <span className="table__player-role">{hrac.poznamka}</span>}
       </h3>
       {isAdmin && (
         <div className="actions">
-          {isReorderingEnabled && (
-            <div className="table__reorder-actions">
-              <Button
-                size="sm"
-                variant="ghost-light"
-                aria-label={`Posunout hráče ${hrac.jmeno} nahoru`}
-                title="Posunout nahoru"
-                onClick={() => onMove(hrac.id, -1)}
-                disabled={!canMoveUp}
-              >
-                ↑
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost-light"
-                aria-label={`Posunout hráče ${hrac.jmeno} dolů`}
-                title="Posunout dolů"
-                onClick={() => onMove(hrac.id, 1)}
-                disabled={!canMoveDown}
-              >
-                ↓
-              </Button>
-            </div>
-          )}
           <Button size="sm" onClick={() => onAddRequest(hrac)}>
             + Přidat dres
           </Button>
